@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garhwali-Kumaoni Voice Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 700px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 15px;
+        }
+        
+        .mode-toggle {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: #f0f0f0;
+            padding: 5px;
+            border-radius: 12px;
+        }
+        
+        .mode-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            color: #666;
+        }
+        
+        .mode-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .input-section {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #333;
+            font-weight: 600;
+            font-size: 15px;
+        }
+        
+        select, textarea {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        
+        select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .voice-section {
+            display: none;
+        }
+        
+        .voice-section.active {
+            display: block;
+        }
+        
+        .text-section {
+            display: none;
+        }
+        
+        .text-section.active {
+            display: block;
+        }
+        
+        .mic-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9ff;
+            border-radius: 15px;
+        }
+        
+        .mic-button {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            font-size: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 25px rgba(245, 87, 108, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .mic-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 35px rgba(245, 87, 108, 0.5);
+        }
+        
+        .mic-button:active {
+            transform: scale(0.98);
+        }
+        
+        .mic-button.recording {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { 
+                transform: scale(1);
+                box-shadow: 0 10px 25px rgba(250, 112, 154, 0.4);
+            }
+            50% { 
+                transform: scale(1.08);
+                box-shadow: 0 15px 40px rgba(250, 112, 154, 0.6);
+            }
+        }
+        
+        .mic-status {
+            margin-top: 20px;
+            padding: 12px 24px;
+            background: white;
+            border-radius: 20px;
+            color: #667eea;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .recognized-box {
+            background: #fff9e6;
+            padding: 18px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 4px solid #ffd700;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .recognized-box.show {
+            display: block;
+        }
+        
+        .recognized-label {
+            color: #b8860b;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .recognized-text {
+            color: #333;
+            font-size: 19px;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+        
+        .translate-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .translate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .translate-btn:active {
+            transform: translateY(0);
+        }
+        
+        .output-section {
+            margin-top: 30px;
+            padding: 22px;
+            background: #e8f5e9;
+            border-radius: 12px;
+            display: none;
+            border-left: 4px solid #4caf50;
+            animation: slideIn 0.3s ease;
+        }
+        
+        .output-section.show {
+            display: block;
+        }
+        
+        .output-label {
+            color: #2e7d32;
+            font-weight: 600;
+            margin-bottom: 12px;
+            font-size: 15px;
+        }
+        
+        .output-text {
+            color: #333;
+            font-size: 18px;
+            line-height: 1.8;
+        }
+        
+        .example-phrases {
+            margin-top: 30px;
+            padding: 20px;
+            background: #e8f4f8;
+            border-radius: 12px;
+        }
+        
+        .example-phrases h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 17px;
+        }
+        
+        .example-phrases ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .example-phrases li {
+            padding: 8px 0;
+            color: #555;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 6px;
+            padding-left: 10px;
+        }
+        
+        .example-phrases li:hover {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+            padding-left: 15px;
+        }
+        
+        .browser-warning {
+            background: #fff3cd;
+            padding: 14px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ffc107;
+            font-size: 13px;
+            color: #856404;
+            display: none;
+        }
+        
+        .browser-warning.show {
+            display: block;
+        }
+        
+        .feature-badge {
+            display: inline-block;
+            background: #e8f4f8;
+            color: #667eea;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin: 5px 5px 5px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🎤 Garhwali-Kumaoni Assistant</h1>
+        <p class="subtitle">Voice & Text Translation for Uttarakhand Languages</p>
+        
+  <div class="mode-toggle">
+    <button class="mode-btn active" id="voiceBtn" onclick="switchMode('voice')">Voice</button>
+    <button class="mode-btn" id="textBtn" onclick="switchMode('text')">Text</button>
+</div>
+        <div class="browser-warning" id="browserWarning">
+            <strong>⚠️ Browser Note:</strong> Voice mode works best in Chrome or Edge. If voice doesn't work, please use Text Mode.
+        </div>
+        
+        <div class="mode-toggle">
+            <button class="mode-btn active" id="voiceModeBtn" onclick="switchMode('voice')">
+                🎤 Voice Mode
+            </button>
+            <button class="mode-btn" id="textModeBtn" onclick="switchMode('text')">
+                ⌨️ Text Mode
+            </button>
+        </div>
+        
+        <!-- VOICE MODE SECTION -->
+        <div class="voice-section active" id="voiceSection">
+            <div class="input-section">
+                <label for="voiceLanguage">Select Language:</label>
+                <select id="voiceLanguage">
+                    <option value="garhwali">Garhwali (गढ़वाली)</option>
+                    <option value="kumaoni">Kumaoni (कुमाऊँनी)</option>
+                </select>
+            </div>
+            
+            <div class="mic-container">
+                <button class="mic-button" id="micButton" onclick="toggleRecording()">
+                    🎙️
+                </button>
+                <div class="mic-status" id="micStatus">
+                    Click microphone to start speaking
+                </div>
+            </div>
+            
+            <div class="recognized-box" id="recognizedBox">
+                <div class="recognized-label">🎯 You said:</div>
+                <div class="recognized-text" id="recognizedText"></div>
+            </div>
+            
+            <button class="translate-btn" onclick="translateVoice()">
+                🔄 Translate to Hindi & English
+            </button>
+        </div>
+        
+        <!-- TEXT MODE SECTION -->
+        <div class="text-section" id="textSection">
+            <div class="input-section">
+                <label for="textLanguage">Select Language:</label>
+                <select id="textLanguage">
+                    <option value="garhwali">Garhwali (गढ़वाली)</option>
+                    <option value="kumaoni">Kumaoni (कुमाऊँनी)</option>
+                </select>
+            </div>
+            
+            <div class="input-section">
+                <label for="inputText">Type your text:</label>
+                <textarea id="inputText" placeholder="Type in Garhwali or Kumaoni... या यहाँ टाइप करें..."></textarea>
+            </div>
+            
+            <button class="translate-btn" onclick="translateText()">
+                🔄 Translate to Hindi & English
+            </button>
+        </div>
+        
+        <!-- OUTPUT SECTION -->
+        <div class="output-section" id="outputSection">
+            <div class="output-label">📢 Translation Result:</div>
+            <div class="output-text" id="outputText"></div>
+        </div>
+        
+        <!-- EXAMPLE PHRASES -->
+        <div class="example-phrases">
+            <h3>💡 Try these example phrases (click to auto-fill in text mode):</h3>
+            <ul id="exampleList">
+                <li onclick="fillExample('तुम कठां जांदा', 'garhwali')">
+                    <strong>Garhwali:</strong> "तुम कठां जांदा" → Where are you going?
+                </li>
+                <li onclick="fillExample('मैं बाट देखणि छूं', 'garhwali')">
+                    <strong>Garhwali:</strong> "मैं बाट देखणि छूं" → I am looking at the path
+                </li>
+                <li onclick="fillExample('पाणी', 'garhwali')">
+                    <strong>Garhwali:</strong> "पाणी" → Water
+                </li>
+                <li onclick="fillExample('धन्यबाद', 'garhwali')">
+                    <strong>Garhwali:</strong> "धन्यबाद" → Thank you
+                </li>
+                <li onclick="fillExample('कैसो छो', 'garhwali')">
+                    <strong>Garhwali:</strong> "कैसो छो" → How are you?
+                </li>
+                <li onclick="fillExample('तू कत जांछे', 'kumaoni')">
+                    <strong>Kumaoni:</strong> "तू कत जांछे" → Where are you going?
+                </li>
+                <li onclick="fillExample('मी खाणा खान्छु', 'kumaoni')">
+                    <strong>Kumaoni:</strong> "मी खाणा खान्छु" → I am eating food
+                </li>
+                <li onclick="fillExample('पानी', 'kumaoni')">
+                    <strong>Kumaoni:</strong> "पानी" → Water
+                </li>
+                <li onclick="fillExample('धन्याबाद', 'kumaoni')">
+                    <strong>Kumaoni:</strong> "धन्याबाद" → Thank you
+                </li>
+                <li onclick="fillExample('कसो छो', 'kumaoni')">
+                    <strong>Kumaoni:</strong> "कसो छो" → How are you?
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+   <script>
+/* ================= TRANSLATIONS ================= */
+const translations = {
+  garhwali: [
+    { keywords: ["कठां", "कत"], hindi: "तुम कहाँ जा रहे हो?", english: "Where are you going?" },
+    { keywords: ["पाणी"], hindi: "पानी", english: "Water" },
+    { keywords: ["धन्यवाद"], hindi: "धन्यवाद", english: "Thank you" },
+    { keywords: ["धन्यबाद"], hindi: "धन्यवाद", english: "Thank you" },
+    { keywords: ["कैसो"], hindi: "कैसे हो?", english: "How are you?" }
+  ],
+  kumaoni: [
+    { keywords: ["कट"], hindi: "तुम कहाँ जा रहे हो?", english: "Where are you going?" },
+    { keywords: ["पानी"], hindi: "पानी", english: "Water" },
+    { keywords: ["धन्याबाद"], hindi: "धन्यवाद", english: "Thank you" },
+    { keywords: ["कसू"], hindi: "कैसे हो?", english: "How are you?" }
+  ]
+};
+
+/* ================= SPEECH ================= */
+let recognition;
+let isRecording = false;
+let recognizedSpeech = "";
+
+function initSpeech() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) return;
+
+  recognition = new SR();
+  recognition.lang = "hi-IN";
+  recognition.continuous = false;
+
+  recognition.onresult = e => {
+    recognizedSpeech = e.results[0][0].transcript.trim();
+    recognizedText.innerText = recognizedSpeech;
+    recognizedBox.classList.add("show");
+  };
+}
+
+function toggleRecording() {
+  if (!recognition) return;
+  recognition.start();
+}
+
+/* ================= UTILS ================= */
+function normalize(text) {
+  return text.replace(/[?.!]/g, "").trim();
+}
+
+/* ================= TRANSLATION ================= */
+function performTranslation(lang, inputText) {
+  const text = normalize(inputText);
+  const entries = translations[lang];
+
+  for (const item of entries) {
+    if (item.keywords.some(k => text.includes(k))) {
+      outputText.innerHTML = `
+        <b>Hindi:</b> ${item.hindi}<br>
+        <b>English:</b> ${item.english}
+      `;
+      outputSection.classList.add("show");
+      return;
+    }
+  }
+
+  outputText.innerHTML = `
+    <b>⚠️ Translation not available</b><br>
+    "${inputText}"
+  `;
+  outputSection.classList.add("show");
+}
+
+function translateVoice() {
+  if (!recognizedSpeech) return;
+  performTranslation(voiceLanguage.value, recognizedSpeech);
+}
+
+function translateText() {
+  if (!inputText.value.trim()) return;
+  performTranslation(textLanguage.value, inputText.value);
+}
+
+/* ================= EXAMPLES FIX ================= */
+function fillExample(text, lang) {
+  switchMode("text");
+  inputText.value = text;
+  textLanguage.value = lang;
+}
+
+/* ================= MODE SWITCH ================= */
+function switchMode(mode) {
+  voiceSection.classList.remove("active");
+  textSection.classList.remove("active");
+  voiceBtn.classList.remove("active");
+  textBtn.classList.remove("active");
+
+  if (mode === "voice") {
+    voiceSection.classList.add("active");
+    voiceBtn.classList.add("active");
+  } else {
+    textSection.classList.add("active");
+    textBtn.classList.add("active");
+  }
+}
+
+window.onload = initSpeech;
+</script>
+</body>
+</html> 
+
+
+
+
