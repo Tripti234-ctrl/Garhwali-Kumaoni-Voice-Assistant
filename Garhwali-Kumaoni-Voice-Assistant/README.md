@@ -10,22 +10,23 @@ Garhwali and Kumaoni speakers face difficulty using modern digital services due 
 There is a need for a simple, voice-enabled system that can understand Garhwali and Kumaoni inputs and translate them into Hindi or English.
 
 3. Existing Solutions vs Gaps
-Solution	                Regional Language Support	        Limitation
-Google Translate	              NO	                     No Garhwali/Kumaoni
-Hindi Voice Assistants	          NO	                     Excludes native speakers
-Phrasebooks	                    Limited	                     Static, no voice
-Tourist Apps	                  NO	                     Major languages only
+|Solution	                | Regional Language Support	    |    Limitation             |
+|Google Translate	        |      NO	                    | No Garhwali/Kumaoni       |
+|Hindi Voice Assistants	    |      NO	                    | Excludes native speakers  |
+|Phrasebooks	            |   Limited	                    | Static, no voice          |
+|Tourist Apps	            |     NO	                    | Major languages only      |
+
 Gap Identified:
 No voice-first, AI-based solution exists for Garhwali and Kumaoni.
 
 4. Why the Proposed Solution is Better
 The proposed system directly addresses gaps left by existing tools:
-Criteria	                 Existing Tools	            Proposed Solution
-Regional language focus	         no                          Yes
-Voice-first interaction	         no                         Yes
-Elderly usability	             Low	                    High
-Tourist relevance	           Limited                  	High
-Adaptability via AI	           Limited                 	  Planned
+|Criteria	                | Existing Tools	    |  Proposed Solution   |
+|Regional language focus	|    no                 |       Yes            |
+|Voice-first interaction	|     no                |       Yes            |
+|Elderly usability	        |    Low	            |       High           |
+|Tourist relevance	        |   Limited             |     	High           |
+|Adaptability via AI	    |   Limited             |    	Planned        |
 
 Key Advantage:
 The solution is region-specific, voice-centric, and inclusive
